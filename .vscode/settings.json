@@ -1,5 +1,8 @@
 {
-    "python.analysis.extraPaths": ["./"],
+    "python.analysis.extraPaths": [
+      "./",
+      "./app"
+    ],
     "python.pythonPath": ".venv/bin/python",
     "python.analysis.autoSearchPaths": true,
     "python.analysis.useLibraryCodeForTypes": true
