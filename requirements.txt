@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+mysqlclient
+flask-session
+bcrypt
+gunicorn
+python-dotenv
