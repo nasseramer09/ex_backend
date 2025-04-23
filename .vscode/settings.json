@@ -1,7 +1,8 @@
 {
     "python.analysis.extraPaths": [
       "./",
-      "./app"
+      "./app",
+      "./app/services"
     ],
     "python.pythonPath": ".venv/bin/python",
     "python.analysis.autoSearchPaths": true,
