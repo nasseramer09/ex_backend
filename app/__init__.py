@@ -1,1 +1,15 @@
 from flask import Flask
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
+from .api import users as user_bp
+
+app.register_blueprint(user_bp, url_prefix='/api/users')
+
+if __name__=='__main__':
+    app.run(debug=True)

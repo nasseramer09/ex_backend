@@ -1,30 +1,22 @@
-from flask import Falsk, jsonify, request
-import app
-from db import connectionToDataBase
-from werkzeug.security import generate_password_hash
+from flask import Falsk, jsonify, request, Blueprint
+from app.services.user_services import User_Services
 
-@app.route('/create_user', methods=['POST'])
-def createAcount(firstName:str, lastName:str, userName:str , password:str, role:str):
-        conn = connectionToDataBase.DataBaseConnection.get_db_connection()
-        cursor = conn.cursor()
+user_blueprint = Blueprint('users', __name__, url_prefix='api/users')
+User_Services = User_Services()
 
-        hashed_password= generate_password_hash(password)
-        fornamn=firstName.lower()
-        efternamn=lastName.lower()
-        anvandarnamn=userName.lower()
-        rolen = role.strip().lower()
-        
-        
-        print(f"Försöker infoga roll: '{rolen}'")
-        cursor.execute(
-            """
-            INSERT INTO users (first_name, last_name, username, password_hash, role)
-            VALUES (%s, %s, %s, %s, %s)
-            """, (fornamn, efternamn, anvandarnamn, hashed_password, rolen)
-        )
+@user_blueprint.route('/create', methods=['POST'])
+def createAcount():
 
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return{"message": "User has being created successfully "}
+    user_data = request.get_json()
+
+    if not user_data:
+        return jsonify({'messafe': 'Inga värde har motagits '}), 400
+
+    new_user = User_Services.createAcount(user_data)
+
+    if new_user:
+        return jsonify(new_user.to_dict()), 201
+    else:
+
+        return jsonify({"message": "kunde inte skapa användare"}), 500
         
