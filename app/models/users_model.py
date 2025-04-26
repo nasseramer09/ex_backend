@@ -27,8 +27,8 @@ class User:
     def user_to_dic(self):
         return {
             'id': self.id,
-            'firstname': self.firstname,
-            'lastname':self.lastname,
+            'first_name': self.firstname,
+            'last_name':self.lastname,
             'username':self.username,
             'role': self.role,
             'phone_number' : self.phone_number,
