@@ -53,4 +53,13 @@ def update_user(user_id):
         return jsonify(update_user.user_to_dic()), 200
     else:
         return jsonify({'message': f"Kunde inte uppdatera användaren med ID {user_id} eller kunde inte hitta användaren"}), 400
+
+@user_blueprint.route('/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    success_deletation = User_Services.delete_user(user_id)
+
+    if success_deletation:
+        return '', 204
+    else:
+        return jsonify({"message": f"Kunde inte hitta användare med id {user_id} för att ta bort"}), 404
     
