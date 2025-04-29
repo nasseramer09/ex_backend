@@ -5,3 +5,4 @@ bcrypt
 gunicorn
 python-dotenv
 mysql-connector-python
+pytest

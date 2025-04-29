@@ -3,18 +3,18 @@ import datetime
 class User:
 
     id:int
-    firstname:str
-    lastname:str
+    first_name:str
+    last_name:str
     username:str
-    role:str
     password_hash:str
-    phone_number:str
+    role:str
     created_at:datetime
+    phone_number:str
      
-    def __init__(self, id:int,firstname:str, lastname:str, username:str, role:str, password_hash:str, phone_number:str, created_at:datetime):
+    def __init__(self, id:int,first_name:str, last_name:str, username:str, role:str, password_hash:str, phone_number:str, created_at:datetime):
         self.id = id
-        self.firstname = firstname
-        self.lastname = lastname
+        self.first_name = first_name
+        self.last_name = last_name
         self.username = username
         self.role = role
         self.password_hash = password_hash
@@ -22,13 +22,13 @@ class User:
         self.created_at = created_at
     
     def full_name(self):
-        return f"{self.firstname} + {self.lastname}"
+        return f"{self.first_name} + {self.last_name}"
     
     def user_to_dic(self):
         return {
             'id': self.id,
-            'firstname': self.firstname,
-            'lastname':self.lastname,
+            'first_name': self.first_name,
+            'last_name':self.last_name,
             'username':self.username,
             'role': self.role,
             'phone_number' : self.phone_number,
