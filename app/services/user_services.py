@@ -112,10 +112,10 @@ class User_Services:
    
       def delete_user(self, user_id):
          conn = connectionToDataBase.DataBaseConnection.get_db_connection()
-         cursor=conn.cursor()
+         cursor = conn.cursor()
 
          try:
-            cursor.execute(" DELETE FROM users WHERE id = %S", (user_id,))
+            cursor.execute(" DELETE FROM users WHERE id = %s", (user_id,))
             conn.commit()
             return cursor.rowcount > 0 # Detta kommer att kolla om annat rad kommer att påverkad av bortagningen
          except Exception as e:
