@@ -36,12 +36,11 @@ class User_Services:
 
       
       def createAccount(self, user_data):
-        print("create account metoden anropas med : ", user_data)
         conn = connectionToDataBase.DataBaseConnection.get_db_connection()
-        print("Databasanslutning:", conn)
+
         if not conn:
-           print("Databasanslutning:", conn)
-           return None
+           
+           return None, 500
         cursor = conn.cursor()
         hashed_password= generate_password_hash(user_data['password_hash'])
         
@@ -62,7 +61,7 @@ class User_Services:
             user_id= cursor.lastrowid
             cursor.close()
             conn.close()
-            return self.get_user_by_id(user_id)
+            return self.get_user_by_id(user_id), 201
         
         except Exception as e:
            if conn:
@@ -70,7 +69,11 @@ class User_Services:
            cursor.close()
            conn.close()
            print(f"Fel vid skapandet av användare: {e}")
-           return None
+           if "Duplicate entery" in str(e):
+              return {"message": f"Användarnamnet finns redan "}, 400
+           else:
+              return {"message": f"Något blev fel {e}"}, 500
+      
         
       def update_user(self, user_id, user_data):
          conn = connectionToDataBase.DataBaseConnection.get_db_connection()
