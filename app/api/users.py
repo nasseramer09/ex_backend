@@ -12,13 +12,13 @@ def createAccount():
     if not user_data:
         return jsonify({'messafe': 'Inga värde har motagits '}), 400
 
-    new_user = User_Services.createAcount(user_data)
+    new_user, status_kod = User_Services.createAccount(user_data)
 
-    if new_user:
-        return jsonify(new_user.to_dic()), 201
+    if isinstance(new_user, dict) and 'message' in new_user:
+        return jsonify(new_user), status_kod
     else:
 
-        return jsonify({"message": "kunde inte skapa användare"}), 500
+        return jsonify(new_user.user_to_dic()), 201
         
 @user_blueprint.route('/<int:user_id>', methods=['GET'])
 def getAccount(user_id):
