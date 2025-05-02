@@ -58,8 +58,10 @@ class Task_services:
     def get_all_tasks(self):
         conn = connectionToDataBase.DataBaseConnection.get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, title, description, estimated_time, start_adress, destination_adress, car_id, status" \
-        "FROM tasks")
+        sql_query=("SELECT id, title, description, estimated_time, start_adress, destination_adress, car_id, status" \
+        " FROM tasks")
+        print(f"SQL Query {sql_query}")
+        cursor.execute(sql_query)
 
         result = cursor.fetchall()
         cursor.close()
