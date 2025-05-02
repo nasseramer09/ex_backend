@@ -24,7 +24,7 @@ class Task:
     def title(self):
         return f"{self.title}"
     
-    def task_to_dic(self):
+    def to_dic(self):
         return {
             'id': self.id,
             'title': self.title,

@@ -1,8 +1,8 @@
+import uuid
 import pytest 
 from app.services.user_services import User_Services
 from app.models.users_model import User
 from app.db import connectionToDataBase
-from app import create_app
 
 @pytest.fixture(scope="function")
 def db_connection():
@@ -19,25 +19,27 @@ def user_service(db_connection):
     return User_Services()
 
 def test_create_account_success(user_service, db_connection):
+    username=f"user_{uuid.uuid4().hex[:8]}" #För att göra användarnamnet unikt 
     user_data={
         'first_name':'Test',
         'last_name':'Testsson',
-        'username': 'test@testsson',
+        'username': username,
         'password_hash':'teslösenord',
-        'role':'admin',
+        'role':'personal',
         'phone_number':'0701234567'
     }
 
     new_user, status_code = user_service.createAccount(user_data)
     assert status_code == 201
     assert isinstance(new_user, User)
-    assert new_user.username == 'test@testsson'
+    assert new_user.username == username
 
 def test_create_account_duplicate_username(user_service, db_connection):
+    username = f"user_{uuid.uuid4().hex[:8]}" 
     existing_user_data ={
         'first_name':'Test1',
         'last_name':'Testsson1',
-        'username': 'test@testsson1',
+        'username': username,
         'password_hash':'teslösenord1',
         'role':'admin',
         'phone_number':'0701234567'
@@ -48,7 +50,7 @@ def test_create_account_duplicate_username(user_service, db_connection):
     duplicate_user = {
         'first_name':'Test12',
         'last_name':'Testsson12',
-        'username': 'test@testsson1',
+        'username': 'userforTesT1',
         'password_hash':'teslösenord12',
         'role':'admin',
         'phone_number':'0701234567'
@@ -59,18 +61,19 @@ def test_create_account_duplicate_username(user_service, db_connection):
     assert 'Användarnamnet är redan upptaget' in result['message']
 
 def test_get_user_by_id(user_service, db_connection):
+    username=f"user_{uuid.uuid4().hex[:8]}" 
     test_user_data={
         'first_name':'Test12',
         'last_name':'Testsson12',
-        'username': 'test@testsson1',
-        'password_hash':'teslösenord12',
+        'username': 'userforTesT12',
+        'password_hash':username,
         'role':'admin',
         'phone_number':'0701234567'
     }
-    created_user, _=user_service.createAccount(test_user_data)
-    retrived_user= user_service.get_user_by_id(created_user)
+    created_user, _= user_service.createAccount(test_user_data)
+    retrived_user= user_service.get_user_by_id(created_user.id)
     assert isinstance(retrived_user, User)
-    assert retrived_user.username == 'test@testsson1'
+    assert retrived_user.username == 'userforTesT12'
 
 def test_get_user_by_id_not_found(user_service, db_connection):
     non_existing_user= user_service.get_user_by_id(1000)
@@ -80,7 +83,7 @@ def test_get_all_users(user_service, db_connection):
     user_data1={
          'first_name':'all_test_1',
         'last_name':'all_son1',
-        'username': 'all1',
+        'username': 'userforTesT13',
         'password_hash':'all1234',
         'role':'admin',
         'phone_number':'0776543210'
@@ -89,7 +92,7 @@ def test_get_all_users(user_service, db_connection):
     user_data2={
          'first_name':'all_test_2',
         'last_name':'all_son2',
-        'username': 'all2',
+        'username': 'userforTesT14',
         'password_hash':'all1234e',
         'role':'personal',
         'phone_number':'0776543210'
@@ -102,12 +105,13 @@ def test_get_all_users(user_service, db_connection):
     assert len(all_users) >= 2
 
 def test_update_user(user_service, db_connection):
+     username=f"user_{uuid.uuid4().hex[:8]}" 
      user_data={
          'first_name':'orginal',
         'last_name':'namn',
-        'username': 'orginalnamn',
+        'username': username,
         'password_hash':'passpw',
-        'role':'perosnal',
+        'role':'personal',
         'phone_number':'0776543210'
     }
      created_user, _= user_service.createAccount(user_data)
@@ -119,7 +123,7 @@ def test_update_user(user_service, db_connection):
      assert isinstance(updated_user, User)
      assert updated_user.first_name == 'Uppdaterad'
      assert updated_user.phone_number == '456345'
-     assert updated_user.username == 'Orginaluseren'
+     assert updated_user.username == username
      
 def test_update_user_not_found(user_service, db_connection):
     update_data = {'first_name':'Testtesttest'}
@@ -128,12 +132,13 @@ def test_update_user_not_found(user_service, db_connection):
 
 
 def test_delete_user(user_service, db_connection):
+     username=f"user_{uuid.uuid4().hex[:8]}" 
      user_data={
         'first_name':'användare',
         'last_name':'som ska',
-        'username': 'tasbort',
+        'username': username,
         'password_hash':'passpw',
-        'role':'perosnal',
+        'role':'personal',
         'phone_number':'0776543210'
     }
      create_user, _= user_service.createAccount(user_data)
