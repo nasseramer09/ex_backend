@@ -32,7 +32,7 @@ def test_create_account_success(user_service, db_connection):
     new_user, status_code = user_service.createAccount(user_data)
     assert status_code == 201
     assert isinstance(new_user, User)
-    assert new_user.username == 'userforTesT'
+    assert new_user.username == username
 
 def test_create_account_duplicate_username(user_service, db_connection):
     username = f"user_{uuid.uuid4().hex[:8]}" 
