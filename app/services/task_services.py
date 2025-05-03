@@ -11,13 +11,13 @@ class Task_services:
         cursor = conn.cursor()
 
         sql_query="""
-                    INSERT INTO tasks (title, description, card_id, start_adress, destination_adress, estimated_time, status)
+                    INSERT INTO tasks (title, description, car_id, start_adress, destination_adress, estimated_time, status)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """
         values = (
             task_data.get('title'),
             task_data.get('description'),
-            task_data.get('card_id'),
+            task_data.get('car_id'),
             task_data.get('start_adress'),
             task_data.get('destination_adress'),
             task_data.get('estimated_time'),
@@ -60,7 +60,7 @@ class Task_services:
         cursor = conn.cursor()
         sql_query=("SELECT id, title, description, estimated_time, start_adress, destination_adress, car_id, status" \
         " FROM tasks")
-        print(f"SQL Query {sql_query}")
+
         cursor.execute(sql_query)
 
         result = cursor.fetchall()
@@ -91,7 +91,7 @@ class Task_services:
         if not updated_fields:
             cursor.close()
             conn.close()
-            return self.get_task_by_id(task_id), 200
+            return self.get_task_by_id(task_id)
         
         sql_query= f"UPDATE tasks SET {', '.join(updated_fields)} WHERE id = %s"
         values.append(task_id)
@@ -101,7 +101,7 @@ class Task_services:
             conn.commit()
             cursor.close()
             conn.close()
-            return self.get_task_by_id(task_id), 200
+            return self.get_task_by_id(task_id)
         
         except Exception as e:
             if conn:
@@ -117,7 +117,7 @@ class Task_services:
         cursor= conn.cursor()
 
         try:
-            cursor.execute(" DELETE FROM tasks WHERE id = %s" (task_id,))
+            cursor.execute(" DELETE FROM tasks WHERE id = %s", (task_id,))
             conn.commit()
             if cursor.rowcount > 0:
                 return {"message": f" uppgift med id {task_id} har tagits bort"}, 204
