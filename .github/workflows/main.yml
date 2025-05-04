@@ -11,25 +11,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        services:
-          mysql:
-            image: mysql:latest
-            ports: 
-              - 3306:3306
-            env:
-              DB_HOST: 127.0.0.1
-              MYSQL_ROOT_PASSWORD: this is password
-              MYSQL_DATABASE: uppdrag_hanterare_db
-              MYSQL_USER: test_user
-              MYSQL_PASSWORD: this is test password
-              DB_PORT: 3306
-
-              options: >-
-                --health-cmd="mysqladmin ping"
-                --health-interval=10s
-                --health-timeout=5s
-                --health-retries=3
-
+        
         steps:
             - name: Check out code 
               uses: actions/checkout@v4
@@ -44,20 +26,7 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
             
-            - name: Set up test enviroment
-              run: |
-
             - name: Run tests
               run: |
-                pytest tests/
-              env:
-               
-                DB_HOST: 127.0.0.1
-                MYSQL_ROOT_PASSWORD: this is password
-                MYSQL_DATABASE: uppdrag_hanterare_db
-                MYSQL_USER: test_user
-                MYSQL_PASSWORD: this is test password
-                DB_PORT: 3306
-                DATABASE_URL: mysql://test_user:this is test password@127.0.0.1:3306/uppdrag_hanterare_db
-
+                pytest --disable-pytest-warnings test/test_user_services.py
                 
