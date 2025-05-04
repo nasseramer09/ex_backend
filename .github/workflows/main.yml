@@ -51,6 +51,13 @@ jobs:
               run: |
                 pytest tests/
               env:
+               
+                DB_HOST: 127.0.0.1
+                MYSQL_ROOT_PASSWORD: this is password
+                MYSQL_DATABASE: uppdrag_hanterare_db
+                MYSQL_USER: test_user
+                MYSQL_PASSWORD: this is test password
+                DB_PORT: 3306
                 DATABASE_URL: mysql://test_user:this is test password@127.0.0.1:3306/uppdrag_hanterare_db
 
                 
