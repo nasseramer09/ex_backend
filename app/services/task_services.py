@@ -109,7 +109,6 @@ class Task_services:
             cursor.close()
             conn.close()
             error_message= f"Fel vid uppdatering av tasken med id: {task_id}: {e}"
-            print(error_message)
             return {"message": error_message}, 500
             
     def delete_task(self, task_id):

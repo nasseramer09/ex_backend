@@ -12,8 +12,10 @@ def create_app():
 
     from .api.users import user_blueprint 
     from .api.tasks import tasks_blueprint
+    from .api.car import cars_blueprint
 
     app.register_blueprint(user_blueprint, url_prefix='/api/users')
     app.register_blueprint(tasks_blueprint, url_prefix='/api/tasks')
-   
+    app.register_blueprint(cars_blueprint, url_prefix='/api/cars')
+    
     return app

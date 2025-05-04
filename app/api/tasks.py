@@ -38,8 +38,6 @@ def get_task(task_id):
 
 @tasks_blueprint.route('/get_all_tasks', methods=['GET'])
 def get_all_tasks():
-
-
     tasks, status_kod = tasks_services.get_all_tasks()
     if tasks:
         task_list = [task.to_dic() for task in tasks]
