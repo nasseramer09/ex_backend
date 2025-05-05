@@ -28,5 +28,5 @@ jobs:
             
             - name: Run tests
               run: |
-                pytest --disable-pytest-warnings test/test_user_services.py
+                pytest --disable-pytest-warnings test/
                 
