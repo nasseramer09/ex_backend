@@ -18,7 +18,3 @@ class DataBaseConnection:
         except mysql.connector.Error as e:
             print(f"Fel vid databaseAnslutning: {e}")
             return None
-
-
-      
-
