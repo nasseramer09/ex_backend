@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, Blueprint
 from app.services.user_services import User_Services
+from flask_jwt_extended import create_access_token, JWTManager
 
 user_blueprint = Blueprint('users', __name__, url_prefix='api/users')
 User_Services = User_Services()
@@ -10,8 +11,11 @@ def createAccount():
     user_data = request.get_json()
 
     if not user_data:
-        return jsonify({'messafe': 'Inga värde har motagits '}), 400
+        return jsonify({'message': 'Inga värde har motagits '}), 400
 
+    if 'email' not in user_data:
+        return jsonify({'message': 'E-postadress saknas '}), 400
+    
     new_user, status_kod = User_Services.createAccount(user_data)
 
     if isinstance(new_user, dict) and 'message' in new_user:
@@ -62,4 +66,22 @@ def delete_user(user_id):
         return '', 204
     else:
         return jsonify({"message": f"Kunde inte hitta användare med id {user_id} för att ta bort"}), 404
+
+@user_blueprint.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    if not data or 'email' not in data or 'password' not in data:
+        return jsonify({'message': 'E-post och lösenord krävs '}), 400
     
+    email = data['email']
+    password = data['password']
+
+    user = User_Services.get_user_by_email(email)
+
+    if user and User_Services.verify_password(user, password):
+        access_token = create_access_token(identity = user.id)
+        return jsonify(access_token), 200
+    
+    else:
+        return jsonify({'message': "Inloggning misslyckades. Fel E-post eller lösenord "}), 401
