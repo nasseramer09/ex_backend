@@ -46,7 +46,7 @@ class User_Services:
         
         sql_query = """
             INSERT INTO users (first_name, last_name, username, password_hash, role, phone_number, email )
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
         values = (user_data.get('first_name'),
                 user_data.get('last_name'), 
