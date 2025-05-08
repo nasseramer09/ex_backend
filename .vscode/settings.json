@@ -1,0 +1,11 @@
+{
+    "python.analysis.extraPaths": [
+      "./",
+      "./app",
+      "./app/services"
+    ],
+    "python.pythonPath": ".venv/bin/python",
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.useLibraryCodeForTypes": true
+  }
+  
