@@ -11,15 +11,25 @@ class Task:
     car_id = int
     status:str
     
-    def __init__(self, id:int,title:str, description:str, estimated_time:int, status:str, start_adress:str, destination_adress:str, car_id:int):
+    def __init__(self,
+                  id:int,
+                  title:str, 
+                  description:str, 
+                  car_id:int,
+                    
+                 start_adress:str,
+                 destination_adress:str,
+                 estimated_time:int, 
+                 status:str ):
         self.id = id
         self.title = title
         self.description = description
-        self.estimated_time = estimated_time
-        self.start_adress = start_adress
-        self.status = status
-        self.destination_adress=destination_adress
         self.car_id = car_id
+        
+        self.start_adress = start_adress
+        self.destination_adress=destination_adress
+        self.estimated_time = estimated_time
+        self.status = status
     
     
     def to_dic(self):
