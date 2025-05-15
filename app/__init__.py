@@ -2,6 +2,7 @@ from flask import Flask
 from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 def create_app():
 
@@ -13,6 +14,7 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 
     jwt = JWTManager(app)
+    CORS(app, resources={r"/api/*":{"origins": "http://localhost:5173"}})
 
     from .api.users import user_blueprint 
     from .api.tasks import tasks_blueprint
