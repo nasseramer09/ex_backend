@@ -2,8 +2,10 @@ from flask import Flask, jsonify, request, Blueprint
 from app.services.user_services import User_Services
 from flask_jwt_extended import create_access_token, JWTManager
 
-user_blueprint = Blueprint('users', __name__, url_prefix='api/users')
-User_Services = User_Services()
+from app.models.users_model import User
+
+user_blueprint = Blueprint('users', __name__, url_prefix='/api/users')
+user_services = User_Services()
 
 @user_blueprint.route('/create', methods=['POST'])
 def createAccount():
@@ -13,38 +15,47 @@ def createAccount():
     if not user_data:
         return jsonify({'message': 'Inga värde har motagits '}), 400
 
-    if 'email' not in user_data:
+    if 'email' not in user_data or not user_data['email']:
         return jsonify({'message': 'E-postadress saknas '}), 400
+    if 'password_hash' not in user_data or not user_data['password']:
+        return jsonify({'message': 'Lösenord saknas'}), 400
     
-    new_user, status_kod = User_Services.createAccount(user_data)
+    new_user_result, status_kod = user_services.createAccount(user_data)
 
-    if isinstance(new_user, dict) and 'message' in new_user:
-        return jsonify(new_user), status_kod
+    if isinstance(new_user_result, User):
+        return jsonify(new_user_result.user_to_dic()), status_kod
+    
+    elif isinstance(new_user_result, dict) and 'message' in new_user_result:
+        return jsonify(new_user_result), status_kod
+    
     else:
-
-        return jsonify(new_user.user_to_dic()), 201
+        return jsonify({"message": "Kunde inte skapa användare "}), 500
         
 @user_blueprint.route('/<int:user_id>', methods=['GET'])
 def getAccount(user_id):
 
-    user = User_Services.get_user_by_id(user_id)
+    user_result, status_kod = user_services.get_user_by_id(user_id)
 
-    if user:
-        return jsonify(user.user_to_dic()), 200
+    if isinstance(user_result, User):
+        return jsonify(user_result.user_to_dic()), status_kod
+    
+    elif isinstance(user_result, dict) and 'message' in user_result:
+        return jsonify(user_result), status_kod
     else:
-        return jsonify({"message": "kunde inte hämta användare med id: {user_id}"}), 404
+        return jsonify({"message": f"kunde inte hämta användare med id: {user_id}"}), 500
     
 
 @user_blueprint.route('/get_all_users', methods=['GET'])
 def get_all_users():
 
-    users = User_Services.get_all_users()
+    users_list, status_kod = user_services.get_all_users()
 
-    if users:
-        users_list = [user.user_to_dic() for user in users]
-        return jsonify(users_list), 200
+    if users_list:
+        users_dicts = [user.user_to_dic() for user in users_list if isinstance(user, User)]
+        return jsonify(users_dicts), status_kod
     else:
-        return jsonify({"message": "kunde inte hämta användare med id: {user_id}"}), 404
+        
+        return jsonify(users_list), status_kod
     
 @user_blueprint.route('/<int:user_id>', methods=['PATCH'])
 def update_user(user_id):
@@ -52,20 +63,20 @@ def update_user(user_id):
     if not user_data:
         return jsonify({'message': 'Ingen uppdatering mottaget'}), 400
     
-    update_user = User_Services.update_user(user_id, user_data)
-    if update_user:
-        return jsonify(update_user.user_to_dic()), 200
+    update_user_result, status_kod = User_Services.update_user(user_id, user_data)
+
+    if isinstance(update_user_result, User):
+        return jsonify(update_user_result.user_to_dic()), status_kod
+    
+    elif isinstance(update_user_result, dict) and 'message' in update_user_result:
+        return jsonify(update_user_result), status_kod
     else:
-        return jsonify({'message': f"Kunde inte uppdatera användaren med ID {user_id} eller kunde inte hitta användaren"}), 400
+        return jsonify({'message': f"Kunde inte uppdatera användaren med ID {user_id} "}), 500
 
 @user_blueprint.route('/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    success_deletation = User_Services.delete_user(user_id)
-
-    if success_deletation:
-        return '', 204
-    else:
-        return jsonify({"message": f"Kunde inte hitta användare med id {user_id} för att ta bort"}), 404
+    deletation_result, status_kod = user_services.delete_user(user_id)
+    return jsonify(deletation_result), status_kod
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -77,11 +88,10 @@ def login():
     email = data['email']
     password = data['password']
 
-    user = User_Services.get_user_by_email(email)
+    user, status_kod = user_services.get_user_by_email(email)
 
-    if user and User_Services.verify_password(user, password):
+    if user and isinstance(user, User) and user_services.verify_password(user, password):
         access_token = create_access_token(identity = user.id)
-        return jsonify(access_token), 200
-    
+        return jsonify({"access_token": access_token, "user":user.user_to_dic()}), 200
     else:
         return jsonify({'message': "Inloggning misslyckades. Fel E-post eller lösenord "}), 401
