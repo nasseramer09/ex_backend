@@ -51,7 +51,6 @@ class Table_Creation:
                             description TEXT,
                             start_time DATETIME NOT NULL,
                             end_time DATETIME NOT NULL,
-                            estimated_time INT,
                             start_adress VARCHAR(250) NOT NULL,
                             destination_adress VARCHAR(250) NOT NULL,
                             status ENUM('planerat', 'pågående', 'klart', 'avbrutet') DEFAULT 'planerat'
