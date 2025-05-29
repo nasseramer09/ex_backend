@@ -86,82 +86,99 @@ class Car_services:
                 conn.close()
 
     def get_all_cars(self):
-        conn = connectionToDataBase.DataBaseConnection.get_db_connection()
-        cursor = conn.cursor()
-        sql_query = (""" SELECT id, model, license_plate, status, is_occupied 
-                     FROM cars 
-                    """)
-        cursor.execute(sql_query)
-        result= cursor.fetchall()
-        cursor.close()
-        conn.close()
-
-        car_list = []
-        for row in result:
-            car_list.append(Car(*row))
-        return car_list, 200
-    
-    def update_car(self, car_id, car_data):
-        conn = None
-        cursor = None
-
+        conn=None
+        cursor=None
         try:
             conn = connectionToDataBase.DataBaseConnection.get_db_connection()
             if not conn:
                 return {"message": "Kunde inte ansluta till databasen"}, 500
-
+            
             cursor = conn.cursor()
+            sql_query = (""" SELECT id, model, license_plate, status, is_occupied 
+                        FROM cars 
+                        """)
+            cursor.execute(sql_query)
+            result= cursor.fetchall()
+
+            car_list = []
+            for row in result:
+                car_list.append(Car(*row))
+            return car_list, 200
+        
+        except Exception as e:
+            print(f"Fel vid hämtning av alla fordon: {e}")
+            return {"message": f"Kunde inte hämta alla fordon på grund av ett fel: {e}"}, 500
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    def update_car_internal(self, car_id, car_data, existing_cursor=None):
+        conn = None
+        local_cursor = None
+
+        try:
+            if existing_cursor is None:
+                conn = connectionToDataBase.DataBaseConnection.get_db_connection()
+                local_cursor = conn.cursor()
+                cursor_to_use = local_cursor
+            else:
+                cursor_to_use = existing_cursor
+            
             updated_fields = []
             values = []
-            allowed_status=['ledig', 'upptagen', 'ej i tjänst']
+           
 
             for key, value in car_data.items():
-                if key == 'status':
-                    if value not in allowed_status:
-                        return {"message": f"Ogiltig status '{value}'. Tillåtna värden är {', '.join(allowed_status)}"}, 400
-
-                    updated_fields.append(f"{key} = %s")
-                    values.append(value)
-                elif key == 'license_plate':
+                if key in ['model', 'license_plate', 'status', 'is_occupied']:
                     updated_fields.append(f"{key} = %s")
                     values.append(value)
 
-                elif key in ['model', 'is_occupied']:
-                    updated_fields.append(f"{key} = %s")
-                    values.append(value)
             
             if not updated_fields:
-                car, status_kod = self.get_car_by_id(car_id)
-                if isinstance(car, dict) and 'message' in car:
-                    return car, status_kod
-                return car, 200
+                curent_car, status_kod = self.get_car_by_id(car_id)
+                if status_kod ==200:
+                    return curent_car, 200
+                else:
+                    return {"message":"Inga fält att uppdatera"}, 400
             
             sql_query = f"UPDATE cars SET {', '.join(updated_fields)} WHERE id = %s"
             values.append(car_id)
 
-            cursor.execute(sql_query, tuple(values))
-            conn.commit()
+            cursor_to_use.execute(sql_query, tuple(values))
 
-            if cursor.rowcount ==0:
-                return {"message": f"Kunde inte hitta fordon med ID {car_id} att uppdatera."}, 404
-            return self.get_car_by_id(car_id)
-            
+            if existing_cursor is None:
+                conn.commit()
+                updated_car, status_kod = self.get_car_by_id(car_id)
+                if status_kod ==200:
+                    return updated_car, 200
+                else:
+                    return updated_car, status_kod
+            else:
+                return {"message": "Fordonet har uppdaterats internt"},200
+
+
         except mysql.connector.Error as e:
-            if conn:
+            if conn and existing_cursor is None:
                 conn.rollback()
                 print(f"Fel vid uppdatering av fordon (databasfel): {e}")
-            if "Duplicate entry" in str(e) and "license_plate" in str(e): 
-                return {"message": "Registreringsnumret finns redan registrerat på ett annat fordon."}, 409
-            
-            return {"message": f"Fel vid uppdatering av fordon med id {car_id}: {e}"}, 500
-        
+                return {"message": f"Fel vid uppdatering av fordon med id {car_id}: {e}"}, 500
+
         except Exception as e:
-            if conn:
+            if conn and existing_cursor is None:
                 conn.rollback()
-            cursor.close()
-            conn.close()
-            error_message= f" Fel vid uppdatering av car med id: {car_id}: {e}"
-            return {"message": error_message}, 500
+            print(f"Något gick fel vid uppdatering av car med id: {car_id}: {e}")
+            return {"message": f"Något blev fel vid uppdatering av car med id: {car_id}: {e}"}, 500
+        
+        finally:
+            if local_cursor:
+                local_cursor.close()
+            if conn:
+                conn.close()
+    
+    def update_car(self, car_id, data):
+        return self.update_car_internal(car_id, data, existing_cursor=None)
         
     def delete_car(self, car_id):
 
