@@ -13,7 +13,6 @@ class DataBaseConnection:
                 password= os.getenv("DB_PASSWORD",""),
                 database= os.getenv("DB_NAME", "uppdragshanteraren_db")
                 )
-            print(f"databaseAnslutning lyckades")
             return connection
         except mysql.connector.Error as e:
             print(f"Fel vid databaseAnslutning: {e}")
