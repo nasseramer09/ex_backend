@@ -1,6 +1,6 @@
 from flask import request, jsonify, Blueprint
 from app.services.car_services import Car_services
-from app.models.car_model import Car
+from models.user_progress import Car
 
 cars_blueprint=Blueprint('cars', __name__, url_prefix='/api/cars')
 car_services = Car_services()

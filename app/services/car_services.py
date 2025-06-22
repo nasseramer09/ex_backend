@@ -1,7 +1,7 @@
 import mysql
 import mysql.connector
 from ..db import connectionToDataBase
-from app.models.car_model import Car
+from models.user_progress import Car
 
 class Car_services:
     def insert_car(self, car_data):

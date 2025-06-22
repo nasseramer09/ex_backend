@@ -2,8 +2,8 @@ from flask import Flask, jsonify, request, Blueprint
 from app.services.user_services import User_Services
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required
 from app.utils.decorators import role_required
-from app.models.users_model import User
-from app.models.tasks_model import Task
+from models.users import User
+from models.lessons import Task
 
 user_blueprint = Blueprint('users', __name__, url_prefix='/api/users')
 user_services = User_Services()

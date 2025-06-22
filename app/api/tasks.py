@@ -1,6 +1,6 @@
 from flask import request, jsonify, Blueprint
 from app.services.task_services import Task_services
-from app.models.tasks_model import Task
+from models.lessons import Task
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 tasks_blueprint=Blueprint('tasks', __name__, url_prefix='/api/tasks')

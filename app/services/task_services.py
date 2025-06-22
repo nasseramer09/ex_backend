@@ -2,10 +2,10 @@ import datetime
 import mysql.connector
 from app.services.car_services import Car_services
 from app.services.user_services import User_Services
-from app.models.users_model import User
-from app.models.car_model import Car
+from models.users import User
+from models.user_progress import Car
 from ..db import connectionToDataBase
-from app.models.tasks_model import Task
+from models.lessons import Task
 
 class Task_services:
     def __init__(self):

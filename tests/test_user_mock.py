@@ -2,7 +2,7 @@ import datetime
 import pytest
 from unittest.mock import MagicMock, patch
 from app.services.user_services import User_Services
-from app.models.users_model import User
+from models.users import User
 from werkzeug.security import generate_password_hash
 
 @patch('app.services.user_services.connectionToDataBase.DataBaseConnection.get_db_connection')

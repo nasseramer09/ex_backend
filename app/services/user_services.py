@@ -1,7 +1,7 @@
 import mysql.connector
 from ..db import connectionToDataBase
-from app.models.users_model import User
-from app.models.tasks_model import Task
+from models.users import User
+from models.lessons import Task
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class User_Services:
